@@ -1,3 +1,19 @@
-{% for author in authors %}
-    <h3>{{ author.first_name }} {{ author.last_name }}</h3>
-{% endfor %}
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Authors</h1>
+<a href="{% url 'author_create' %}" class="btn btn-primary mb-3">Add Author</a>
+<ul class="list-group">
+    {% for author in authors %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ author }} -
+            <span>
+                <a href="{% url 'author_update' author.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'author_delete' author.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </span>
+        </li>
+    {% empty %}
+        <li class="list-group-item">No authors found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

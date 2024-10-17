@@ -1,4 +1,37 @@
-{% for book in books %}
-    <h3>{{ book.title }} by {{ book.author }}</h3>
-    <p>Status: {{ book.is_available|yesno:"Available,Not Available" }}</p>
-{% endfor %}
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1>Readers</h1>
+<a href="{% url 'reader_create' %}" class="btn btn-primary mb-3">Add Reader</a>
+
+<!-- Форма для фильтрации по книгам (если необходимо) -->
+<form method="GET" class="mb-3">
+    <div class="form-row align-items-center">
+        <div class="col-auto">
+            <label for="bookSelect">Filter by Book:</label>
+            <select name="book" id="bookSelect" class="form-control" onchange="this.form.submit()">
+                <option value="">All Books</option>
+                {% for book in books %}
+                    <option value="{{ book.id }}" {% if book.id|stringformat:"s" == selected_book %}selected{% endif %}>
+                        {{ book.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</form>
+
+<ul class="list-group">
+    {% for reader in readers %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ reader.first_name }} {{ reader.last_name }} -
+            <span>
+                <a href="{% url 'reader_update' reader.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'reader_delete' reader.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </span>
+        </li>
+    {% empty %}
+        <li class="list-group-item">No readers found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

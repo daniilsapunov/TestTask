@@ -1,0 +1,15 @@
+{% extends 'library/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Reader{% else %}Add Reader{% endif %}{% endblock %}
+
+{% block content %}
+<h1>{% if form.instance.pk %}Edit{% else %}Create{% endif %} Reader</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{% url 'reader_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'library/base.html' %}
+{% block content %}
+<h1>Delete Reader</h1>
+<p>Are you sure you want to delete "{{ reader }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Delete</button>
+</form>
+<a href="{% url 'reader_list' %}">Cancel</a>
+{% endblock %}
