@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Author, Book, Reader
-from .forms import AuthorForm, BookForm, ReaderForm
+from .forms import AuthorForm, BookForm, ReaderForm, UserRegistrationForm
+from django.views import View
+from django.contrib.auth.decorators import login_required
+
 
 # Author CRUD
 def author_list(request):
     authors = Author.objects.all()
     return render(request, 'library/author_list.html', {'authors': authors})
 
+
+@login_required
 def author_create(request):
     if request.method == 'POST':
         form = AuthorForm(request.POST)
@@ -17,6 +22,8 @@ def author_create(request):
         form = AuthorForm()
     return render(request, 'library/author_form.html', {'form': form})
 
+
+@login_required
 def author_update(request, pk):
     author = get_object_or_404(Author, pk=pk)
     if request.method == 'POST':
@@ -28,12 +35,15 @@ def author_update(request, pk):
         form = AuthorForm(instance=author)
     return render(request, 'library/author_form.html', {'form': form})
 
+
+@login_required
 def author_delete(request, pk):
     author = get_object_or_404(Author, pk=pk)
     if request.method == 'POST':
         author.delete()
         return redirect('author_list')
     return render(request, 'library/author_confirm_delete.html', {'author': author})
+
 
 # Book CRUD
 def book_list(request):
@@ -44,7 +54,11 @@ def book_list(request):
     if selected_author:
         books = books.filter(author_id=selected_author)  # Фильтруем книги по автору
 
-    return render(request, 'library/book_list.html', {'books': books, 'authors': authors, 'selected_author': selected_author})
+    return render(request, 'library/book_list.html',
+                  {'books': books, 'authors': authors, 'selected_author': selected_author})
+
+
+@login_required
 def book_create(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
@@ -55,6 +69,8 @@ def book_create(request):
         form = BookForm()
     return render(request, 'library/book_form.html', {'form': form})
 
+
+@login_required
 def book_update(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
@@ -66,6 +82,8 @@ def book_update(request, pk):
         form = BookForm(instance=book)
     return render(request, 'library/book_form.html', {'form': form})
 
+
+@login_required
 def book_delete(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
@@ -73,11 +91,14 @@ def book_delete(request, pk):
         return redirect('book_list')
     return render(request, 'library/book_confirm_delete.html', {'book': book})
 
+
 # Reader CRUD
 def reader_list(request):
     readers = Reader.objects.all()
     return render(request, 'library/reader_list.html', {'readers': readers})
 
+
+@login_required
 def reader_create(request):
     if request.method == 'POST':
         form = ReaderForm(request.POST)
@@ -88,6 +109,8 @@ def reader_create(request):
         form = ReaderForm()
     return render(request, 'library/reader_form.html', {'form': form})
 
+
+@login_required
 def reader_update(request, pk):
     reader = get_object_or_404(Reader, pk=pk)
     if request.method == 'POST':
@@ -98,9 +121,27 @@ def reader_update(request, pk):
     else:
         form = ReaderForm(instance=reader)
     return render(request, 'library/reader_form.html', {'form': form})
+
+
+@login_required
 def reader_delete(request, pk):
     reader = get_object_or_404(Reader, pk=pk)
     if request.method == 'POST':
         reader.delete()
         return redirect('reader_list')
     return render(request, 'library/reader_confirm_delete.html', {'reader': reader})
+
+
+class RegisterView(View):
+    def get(self, request):
+        form = UserRegistrationForm()
+        return render(request, 'registration/register.html', {'form': form})
+
+    def post(self, request):
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            return redirect('login')
+        return render(request, 'registration/register.html', {'form': form})

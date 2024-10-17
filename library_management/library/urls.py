@@ -1,5 +1,8 @@
 from django.urls import path
 from library import views
+from django.contrib.auth import views as auth_views
+from .views import RegisterView
+
 
 urlpatterns = [
     path('authors/', views.author_list, name='author_list'),
@@ -16,4 +19,8 @@ urlpatterns = [
     path('readers/create/', views.reader_create, name='reader_create'),
     path('readers/update/<int:pk>/', views.reader_update, name='reader_update'),
     path('readers/delete/<int:pk>/', views.reader_delete, name='reader_delete'),
+
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('register/', RegisterView.as_view(), name='register'),
 ]
