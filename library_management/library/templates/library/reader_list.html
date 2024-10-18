@@ -24,7 +24,11 @@
 <ul class="list-group">
     {% for reader in readers %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ reader.first_name }} {{ reader.last_name }} -
+            {{ reader.first_name }} {{ reader.last_name }}
+            book
+            {% for book in reader.read_books.all %}
+            -{{ book }}
+            {% endfor %}
             <span>
                 <a href="{% url 'reader_update' reader.pk %}" class="btn btn-warning btn-sm">Edit</a>
                 <a href="{% url 'reader_delete' reader.pk %}" class="btn btn-danger btn-sm">Delete</a>
